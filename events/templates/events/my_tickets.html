@@ -1,0 +1,31 @@
+{% extends 'events/base.html' %}
+{% block title %}My Tickets{% endblock %}
+{% block content %}
+<h2>My Tickets</h2>
+{% if tickets %}
+  <ul class="list-group">
+    {% for ticket in tickets %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <strong>{{ ticket.event.title }}</strong> 
+          <small class="text-muted">({{ ticket.event.start_time|date:"SHORT_DATE_FORMAT" }} {{ ticket.event.start_time|time:"SHORT_TIME_FORMAT" }})</small><br>
+          Purchased on {{ ticket.purchase_time|date:"SHORT_DATE_FORMAT" }} at {{ ticket.purchase_time|time:"SHORT_TIME_FORMAT" }}
+        </div>
+        {% comment %}
+        Extended feature: allow resale of ticket
+        {% endcomment %}
+        {% if not ticket.for_sale %}
+          <form method="post" action="{% url 'list_for_resale' ticket.id %}" class="mb-0">
+            {% csrf_token %}
+            <button class="btn btn-outline-secondary btn-sm">Sell Ticket</button>
+          </form>
+        {% else %}
+          <span class="badge bg-info">Listed for Resale</span>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>You have not purchased any tickets yet.</p>
+{% endif %}
+{% endblock %}

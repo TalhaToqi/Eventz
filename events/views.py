@@ -177,3 +177,10 @@ def payment_cancel(request):
     messages.info(request, "Payment canceled. You have not been charged.")
     return redirect('event_detail', event_id=request.GET.get('event_id', ''))
 
+@login_required
+def my_tickets(request):
+    """Show a list of tickets the current user has purchased."""
+    tickets = Ticket.objects.filter(buyer=request.user).select_related('event').order_by('-purchase_time')
+    return render(request, 'events/my_tickets.html', {'tickets': tickets})
+
+

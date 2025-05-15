@@ -1,0 +1,40 @@
+{% extends 'events/base.html' %}
+{% block title %}Organizer Dashboard{% endblock %}
+{% block content %}
+<h2>Organizer Dashboard</h2>
+<p>Welcome, {{ user.username }}! Here are your events:</p>
+<a href="{% url 'create_event' %}" class="btn btn-primary mb-3">Create New Event</a>
+{% if events %}
+  <div class="table-responsive">
+    <table class="table table-bordered align-middle">
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Date</th>
+          <th>Tickets Sold</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ev in events %}
+          <tr>
+            <td>{{ ev.title }}</td>
+            <td>{{ ev.start_time|date:"SHORT_DATE_FORMAT" }} {{ ev.start_time|time:"SHORT_TIME_FORMAT" }}</td>
+            <td>
+              {{ ev.tickets.count }}{% if ev.capacity %}/{{ ev.capacity }}{% endif %}
+            </td>
+            <td>
+              <a href="{% url 'event_detail' ev.id %}" class="btn btn-sm btn-outline-secondary">View</a>
+              <!-- We could add Edit/Delete actions as needed -->
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="4">No events created yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p>You have not created any events yet.</p>
+{% endif %}
+{% endblock %}

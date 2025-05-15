@@ -183,4 +183,13 @@ def my_tickets(request):
     tickets = Ticket.objects.filter(buyer=request.user).select_related('event').order_by('-purchase_time')
     return render(request, 'events/my_tickets.html', {'tickets': tickets})
 
+@login_required
+def organizer_dashboard(request):
+    """Dashboard for organizers to see their events and ticket stats."""
+    # Ensure the user is an organizer
+    if not request.user.groups.filter(name='Organizers').exists():
+        return redirect('home')
+    events = Event.objects.filter(organizer=request.user)
+    return render(request, 'events/organizer_dashboard.html', {'events': events})
+
 

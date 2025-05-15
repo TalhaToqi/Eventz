@@ -17,6 +17,23 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+# eventz_project/urls.py
+
+from django.contrib import admin
+from django.urls import path, include
+from events import views  # we'll put our view functions in events/views.py
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # Auth-related paths:
+    path('accounts/', include('django.contrib.auth.urls')), 
+    # The above line includes default auth routes: login/ logout/ password_reset/ etc.
+    # It expects templates under registration/ directory by default for login and password management.
+
+    # Signup URLs
+    path('signup/', views.signup, name='signup'),  # user signup
+    path('signup/organizer/', views.organizer_signup, name='organizer_signup'),
+
+    # Event app URLs (we will add more as we implement events)
+    path('', include('events.urls')),  # include events app URLs (to create separately)
 ]

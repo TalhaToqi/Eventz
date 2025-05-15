@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>{% if is_organizer_signup %}Organizer Sign Up{% else %}Sign Up{% endif %} - Eventz</title>
+  {% load static %}
+  {% load form_tags %}
+
+  <!-- Include Bootstrap CSS (via CDN for simplicity) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" integrity="sha384-...sha" crossorigin="anonymous">
+</head>
+<body>
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">{% if is_organizer_signup %}Organizer Registration{% else %}Create an Account{% endif %}</h2>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <!-- Django form as paragraphs -->
+        {{ form.non_field_errors }}
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          {{ form.username|add_class:"form-control" }}
+          {{ form.username.errors }}
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          {{ form.email|add_class:"form-control" }}
+          {{ form.email.errors }}
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          {{ form.password1|add_class:"form-control" }}
+          {{ form.password1.errors }}
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Confirm Password</label>
+          {{ form.password2|add_class:"form-control" }}
+          {{ form.password2.errors }}
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+      </form>
+      <p class="text-center mt-3">
+        Already have an account? <a href="{% url 'login' %}">Log in here</a>.
+      </p>
+    </div>
+  </div>
+</div>
+<!-- Include Bootstrap JS (for any interactive components, though not heavily used here) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js" integrity="sha384-...sha" crossorigin="anonymous"></script>
+</body>
+</html>

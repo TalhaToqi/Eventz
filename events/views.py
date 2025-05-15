@@ -13,6 +13,10 @@ from django.http import Http404
 from django.contrib.auth.decorators import login_required
 import stripe
 from django.conf import settings
+from .models import Event
+from .forms import EventForm
+
+
 
 def signup(request):
     """Regular user sign-up view."""

@@ -11,6 +11,8 @@ from django.utils import timezone
 from django.db.models import Q
 from django.http import Http404
 from django.contrib.auth.decorators import login_required
+import stripe
+from django.conf import settings
 
 def signup(request):
     """Regular user sign-up view."""
@@ -91,3 +93,46 @@ def event_detail(request, event_id):
     # If we had an EventReview model: reviews = EventReview.objects.filter(event=event)
 
     return render(request, 'events/event_detail.html', {'event': event, 'reviews': reviews})
+
+
+@login_required
+def buy_ticket(request, event_id):
+    """Initiate a Stripe Checkout session for the given event."""
+    try:
+        event = Event.objects.get(pk=event_id)
+    except Event.DoesNotExist:
+        messages.error(request, "Event not found.")
+        return redirect('event_list')
+
+    # If event has capacity and it's sold out, prevent purchase
+    if event.capacity and event.tickets.count() >= event.capacity:
+        messages.error(request, "This event is sold out.")
+        return redirect('event_detail', event_id=event.id)
+
+    # Stripe configuration
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+
+    # Create a Checkout Session
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        mode='payment',
+        customer_email=request.user.email,  # prefill with user's email
+        client_reference_id=request.user.id,  # reference to our user
+        line_items=[{
+            'price_data': {
+                'currency': 'usd',
+                'product_data': {
+                    'name': f"Ticket for {event.title}",
+                },
+                'unit_amount': int(event.price * 100) if event.price > 0 else 0,
+            },
+            'quantity': 1,
+        }],
+        success_url=request.build_absolute_uri('/') + 'success/?session_id={CHECKOUT_SESSION_ID}',
+        cancel_url=request.build_absolute_uri('/') + 'cancel/',
+        metadata={
+            'event_id': event.id
+        }
+    )
+    # Redirect to Stripe Checkout
+    return redirect(session.url, code=303)

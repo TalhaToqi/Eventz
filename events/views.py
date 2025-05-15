@@ -15,6 +15,7 @@ import stripe
 from django.conf import settings
 from .models import Event
 from .forms import EventForm
+from .models import Event, Category, Ticket
 
 
 

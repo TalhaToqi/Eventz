@@ -1,0 +1,54 @@
+{% extends 'events/base.html' %}
+{% block title %}{{ event.title }}{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-md-8">
+    <h2>{{ event.title }}</h2>
+    <p><strong>Date & Time:</strong> {{ event.start_time|date:"FULL_DATE" }} at {{ event.start_time|time:"SHORT_TIME_FORMAT" }}</p>
+    {% if event.end_time %}
+      <p><strong>Ends:</strong> {{ event.end_time|date:"FULL_DATE" }} {{ event.end_time|time:"SHORT_TIME_FORMAT" }}</p>
+    {% endif %}
+    <p><strong>Location:</strong> {{ event.location }}</p>
+    {% if event.category %}<p><strong>Category:</strong> {{ event.category.name }}</p>{% endif %}
+    <p><strong>Description:</strong><br>{{ event.description|linebreaks }}</p>
+    {% if reviews %}
+      <h4>Reviews:</h4>
+      {% for rev in reviews %}
+        <div class="mb-2">
+          <strong>{{ rev.user.username }}</strong>: 
+          {% for i in "12345"|make_list %}
+            {% if i|int <= rev.rating %}
+              ★
+            {% else %}
+              ☆
+            {% endif %}
+          {% endfor %}
+          <p>{{ rev.comment|linebreaks }}</p>
+        </div>
+      {% empty %}
+        <p>No reviews yet.</p>
+      {% endfor %}
+    {% endif %}
+  </div>
+  <div class="col-md-4">
+    <div class="card p-3 bg-light">
+      {% if event.price > 0 %}
+        <h5>Price: ${{ event.price }}</h5>
+      {% else %}
+        <h5>Free Event</h5>
+      {% endif %}
+      {% if event.capacity %}
+        <p>{{ event.tickets.count }} / {{ event.capacity }} tickets sold</p>
+      {% endif %}
+      {% if user.is_authenticated %}
+        <form action="{% url 'buy_ticket' event.id %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-success w-100">Buy Ticket</button>
+        </form>
+      {% else %}
+        <p><a href="{% url 'login' %}?next={% url 'event_detail' event.id %}" class="btn btn-success w-100">Log in to Buy Ticket</a></p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'events/base.html' %}
+{% load static %}
+{% block title %}Events{% endblock %}
+{% block content %}
+<h2>All Events</h2>
+<form method="get" class="row gy-2 gx-3 align-items-center mb-4">
+  <div class="col-sm-4">
+    <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search events...">
+  </div>
+  <div class="col-sm-3">
+    <select name="category" class="form-select">
+      <option value="">-- All Categories --</option>
+      {% for cat in categories %}
+        <option value="{{ cat.id }}" {% if cat.id|stringformat:"s" == selected_category %}selected{% endif %}>{{ cat.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-auto form-check">
+    <input type="checkbox" name="show_past" value="1" class="form-check-input" id="id_show_past" {% if show_past %}checked{% endif %}>
+    <label class="form-check-label" for="id_show_past">Show past events</label>
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-primary">Filter</button>
+  </div>
+</form>
+
+{% if events %}
+  <div class="row row-cols-1 row-cols-md-2 g-4">
+    {% for event in events %}
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">{{ event.title }}</h5>
+            <p class="card-text">
+              <small class="text-muted">
+                {{ event.start_time|date:"SHORT_DATE_FORMAT" }} {{ event.start_time|time:"SHORT_TIME_FORMAT" }} 
+                {% if event.location %} @ {{ event.location }}{% endif %}
+              </small><br>
+              {{ event.description|truncatewords:20 }}
+            </p>
+            {% if event.category %}<span class="badge bg-secondary">{{ event.category.name }}</span>{% endif %}
+          </div>
+          <div class="card-footer text-end">
+            <a href="{% url 'event_detail' event.id %}" class="btn btn-outline-primary btn-sm">View Details</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p>No events found.</p>
+{% endif %}
+{% endblock %}

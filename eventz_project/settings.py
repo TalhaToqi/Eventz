@@ -126,3 +126,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGOUT_REDIRECT_URL = '/'  # Go to homepage after logout
 LOGIN_REDIRECT_URL = '/'   # After login, go to homepage (or we could set to dashboard)
 LOGIN_URL = '/accounts/login/'
+
+
+# Stripe API keys (test mode)
+STRIPE_PUBLISHABLE_KEY = "pk_test_51ROyqePSevWLufHS6069h6zGNkJUI2dmV140NGZF2ypwiq6t9J6Fe6RdiL2tggaXHKnMBkR7MD1XSA0QQx408vyc00JxlhOAfg"
+STRIPE_SECRET_KEY = "sk_test_51ROyqePSevWLufHSbuZq8pSWdUYCjzEzJ7huhcahQvOGINa2EQi24byKmCKwNeijMkje15PUORGKA7E1WY4YVwjf008CzXEBv8"

@@ -192,4 +192,22 @@ def organizer_dashboard(request):
     events = Event.objects.filter(organizer=request.user)
     return render(request, 'events/organizer_dashboard.html', {'events': events})
 
+@login_required
+def create_event(request):
+    """Allow an organizer to create a new event."""
+    if not request.user.groups.filter(name='Organizers').exists():
+        return redirect('home')
+    if request.method == 'POST':
+        form = EventForm(request.POST)
+        if form.is_valid():
+            new_event = form.save(commit=False)
+            new_event.organizer = request.user
+            new_event.save()
+            messages.success(request, f"Event '{new_event.title}' created successfully!")
+            return redirect('organizer_dashboard')
+    else:
+        form = EventForm()
+    return render(request, 'events/event_form.html', {'form': form, 'action': 'Create'})
+
+
 

@@ -1,0 +1,54 @@
+{% extends 'events/base.html' %}
+{% load static %}
+{% load form_tags %}
+{% block title %}{{ action }} Event{% endblock %}
+{% block content %}
+<h2>{{ action }} Event</h2>
+<form method="post" class="mb-3">
+  {% csrf_token %}
+  <div class="mb-3">
+    <label class="form-label">Title</label>
+    {{ form.title|add_class:"form-control" }}
+    {{ form.title.errors }}
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Description</label>
+    {{ form.description|add_class:"form-control" }}
+    {{ form.description.errors }}
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Category</label>
+    {{ form.category|add_class:"form-select" }}
+    {{ form.category.errors }}
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Start Time</label>
+    {{ form.start_time|add_class:"form-control" }}
+    {{ form.start_time.errors }}
+  </div>
+  <div class="mb-3">
+    <label class="form-label">End Time</label>
+    {{ form.end_time|add_class:"form-control" }}
+    {{ form.end_time.errors }}
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Location</label>
+    {{ form.location|add_class:"form-control" }}
+    {{ form.location.errors }}
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Price (USD)</label>
+    {{ form.price|add_class:"form-control" }}
+    {{ form.price.errors }}
+    <div class="form-text">{{ form.price.help_text }}</div>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Capacity</label>
+    {{ form.capacity|add_class:"form-control" }}
+    {{ form.capacity.errors }}
+    <div class="form-text">{{ form.capacity.help_text }}</div>
+  </div>
+  <button type="submit" class="btn btn-success">{{ action }} Event</button>
+  <a href="{% url 'organizer_dashboard' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

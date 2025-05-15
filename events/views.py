@@ -129,10 +129,51 @@ def buy_ticket(request, event_id):
             'quantity': 1,
         }],
         success_url=request.build_absolute_uri('/') + 'success/?session_id={CHECKOUT_SESSION_ID}',
-        cancel_url=request.build_absolute_uri('/') + 'cancel/',
+                cancel_url=request.build_absolute_uri('/') + f'cancel/?event_id={event.id}',
         metadata={
             'event_id': event.id
         }
     )
     # Redirect to Stripe Checkout
     return redirect(session.url, code=303)
+
+@login_required
+def payment_success(request):
+    """Handle successful payment - create ticket and thank user."""
+    session_id = request.GET.get('session_id')
+    if not session_id:
+        # If accessed without session (or directly), just redirect home
+        return redirect('home')
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    try:
+        session = stripe.checkout.Session.retrieve(session_id)
+    except Exception as e:
+        # If session retrieval fails, perhaps log the error (e) and inform user
+        messages.error(request, "Unable to verify payment. Please contact support.")
+        return redirect('event_list')
+
+    # Double-check payment status
+    if session.payment_status == 'paid':
+        # Retrieve event id from metadata and user from client_reference_id
+        event_id = session.metadata.get('event_id')
+        user_id = session.client_reference_id
+        if event_id and user_id:
+            try:
+                event = Event.objects.get(id=event_id)
+                user = User.objects.get(id=user_id)
+            except (Event.DoesNotExist, User.DoesNotExist):
+                messages.warning(request, "Payment received, but event or user not found.")
+            else:
+                # Create a Ticket
+                Ticket.objects.create(event=event, buyer=user)
+                messages.success(request, f"Thank you for your purchase! Your ticket for '{event.title}' is confirmed.")
+                return redirect('my_tickets')
+    # If we reach here, something is off
+    messages.error(request, "Payment was not successful. If you believe this is an error, please contact support.")
+    return redirect('event_list')
+
+def payment_cancel(request):
+    """Handle canceled payment - just inform the user."""
+    messages.info(request, "Payment canceled. You have not been charged.")
+    return redirect('event_detail', event_id=request.GET.get('event_id', ''))
+

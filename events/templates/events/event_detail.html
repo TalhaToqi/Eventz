@@ -17,12 +17,13 @@
         <div class="mb-2">
           <strong>{{ rev.user.username }}</strong>: 
           {% for i in "12345"|make_list %}
-            {% if i|int <= rev.rating %}
+            {% if forloop.counter <= rev.rating %}
               ★
             {% else %}
               ☆
             {% endif %}
           {% endfor %}
+
           <p>{{ rev.comment|linebreaks }}</p>
         </div>
       {% empty %}

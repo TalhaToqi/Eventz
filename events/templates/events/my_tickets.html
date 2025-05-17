@@ -1,31 +1,45 @@
 {% extends 'events/base.html' %}
 {% block title %}My Tickets{% endblock %}
 {% block content %}
-<h2>My Tickets</h2>
-{% if tickets %}
-  <ul class="list-group">
-    {% for ticket in tickets %}
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div>
-          <strong>{{ ticket.event.title }}</strong> 
-          <small class="text-muted">({{ ticket.event.start_time|date:"SHORT_DATE_FORMAT" }} {{ ticket.event.start_time|time:"SHORT_TIME_FORMAT" }})</small><br>
-          Purchased on {{ ticket.purchase_time|date:"SHORT_DATE_FORMAT" }} at {{ ticket.purchase_time|time:"SHORT_TIME_FORMAT" }}
+<div class="container mt-4">
+  <h2 class="mb-4">🎟️ My Tickets</h2>
+  {% if tickets %}
+    <div class="row g-4">
+      {% for ticket in tickets %}
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card shadow-sm h-100 border-0">
+            <div class="card-body">
+              <h5 class="card-title">{{ ticket.event.title }}</h5>
+              <p class="card-text mb-1">
+                <small class="text-muted">
+                  <i class="bi bi-calendar"></i>
+                  {{ ticket.event.start_time|date:"l, j F Y" }} &bull; {{ ticket.event.start_time|time:"g:i a" }}
+                </small>
+              </p>
+              <p class="mb-1"><strong>Location:</strong> {{ ticket.event.location }}</p>
+              <p class="mb-1">
+                <strong>Purchased:</strong>
+                {{ ticket.purchase_time|date:"j M Y, g:i a" }}
+              </p>
+              {% if ticket.for_sale %}
+                <span class="badge bg-info text-dark">Listed for Resale</span>
+              {% endif %}
+            </div>
+            <div class="card-footer bg-transparent border-0 text-end">
+              {% if not ticket.for_sale %}
+                <form method="post" action="{% url 'list_for_resale' ticket.id %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline-primary btn-sm">Sell Ticket</button>
+                </form>
+         
+              {% endif %}
+            </div>
+          </div>
         </div>
-        {% comment %}
-        Extended feature: allow resale of ticket
-        {% endcomment %}
-        {% if not ticket.for_sale %}
-          <form method="post" action="{% url 'list_for_resale' ticket.id %}" class="mb-0">
-            {% csrf_token %}
-            <button class="btn btn-outline-secondary btn-sm">Sell Ticket</button>
-          </form>
-        {% else %}
-          <span class="badge bg-info">Listed for Resale</span>
-        {% endif %}
-      </li>
-    {% endfor %}
-  </ul>
-{% else %}
-  <p>You have not purchased any tickets yet.</p>
-{% endif %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-warning mt-3">You have not purchased any tickets yet.</div>
+  {% endif %}
+</div>
 {% endblock %}

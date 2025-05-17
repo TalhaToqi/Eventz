@@ -4,13 +4,18 @@
 <div class="row">
   <div class="col-md-8">
     <h2>{{ event.title }}</h2>
-    <p><strong>Date & Time:</strong> {{ event.start_time|date:"FULL_DATE" }} at {{ event.start_time|time:"SHORT_TIME_FORMAT" }}</p>
-    {% if event.end_time %}
-      <p><strong>Ends:</strong> {{ event.end_time|date:"FULL_DATE" }} {{ event.end_time|time:"SHORT_TIME_FORMAT" }}</p>
-    {% endif %}
-    <p><strong>Location:</strong> {{ event.location }}</p>
+   <p><strong>Start Time:</strong>
+    {{ event.start_time|date:"l, j F Y" }}; {{ event.start_time|time:"g:i a" }}
+</p>
+{% if event.end_time %}
+<p><strong>End time:</strong>
+    {{ event.end_time|date:"l, j F Y" }}; {{ event.end_time|time:"g:i a" }}
+</p>
+{% endif %}
+
+    <p><strong>Location:</strong> Luna Park , Sydney </p>
     {% if event.category %}<p><strong>Category:</strong> {{ event.category.name }}</p>{% endif %}
-    <p><strong>Description:</strong><br>{{ event.description|linebreaks }}</p>
+    <p><strong>Description:</strong>{{ event.description }}</p>
     {% if reviews %}
       <h4>Reviews:</h4>
       {% for rev in reviews %}

@@ -16,6 +16,10 @@ from django.conf import settings
 from .models import Event
 from .forms import EventForm
 from .models import Event, Category, Ticket
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
 
 
 
@@ -188,6 +192,19 @@ def my_tickets(request):
     tickets = Ticket.objects.filter(buyer=request.user).select_related('event').order_by('-purchase_time')
     return render(request, 'events/my_tickets.html', {'tickets': tickets})
 
+@login_required
+def list_for_resale(request, ticket_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id, buyer=request.user)
+    if request.method == 'POST':
+        ticket.for_sale = True
+        # Optionally set a resale_price from a form input:
+        # ticket.resale_price = request.POST.get('resale_price')
+        ticket.save()
+        # Redirect back to my_tickets or wherever appropriate
+        return HttpResponseRedirect(reverse('my_tickets'))
+    else:
+        # You might want to render a confirmation or form here
+        return render(request, 'events/list_for_resale.html', {'ticket': ticket})
 @login_required
 def organizer_dashboard(request):
     """Dashboard for organizers to see their events and ticket stats."""

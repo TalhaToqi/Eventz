@@ -8,6 +8,7 @@ urlpatterns = [
     path('events/', views.event_list, name='event_list'),
     path('events/<int:event_id>/', views.event_detail, name='event_detail'),
     path('events/<int:event_id>/buy/', views.buy_ticket, name='buy_ticket'),
+    path('tickets/<int:ticket_id>/list_for_resale/', views.list_for_resale, name='list_for_resale'),
     path('my-tickets/', views.my_tickets, name='my_tickets'),
     path('organizer/dashboard/', views.organizer_dashboard, name='organizer_dashboard'),
     path('organizer/events/new/', views.create_event, name='create_event'),

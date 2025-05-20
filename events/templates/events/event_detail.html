@@ -1,59 +1,81 @@
 {% extends 'events/base.html' %}
+{% load static %}
 {% block title %}{{ event.title }}{% endblock %}
+
 {% block content %}
-<div class="row">
-  <div class="col-md-8">
-    <h2>{{ event.title }}</h2>
-   <p><strong>Start Time:</strong>
-    {{ event.start_time|date:"l, j F Y" }}; {{ event.start_time|time:"g:i a" }}
-</p>
-{% if event.end_time %}
-<p><strong>End time:</strong>
-    {{ event.end_time|date:"l, j F Y" }}; {{ event.end_time|time:"g:i a" }}
-</p>
-{% endif %}
-
-    <p><strong>Location:</strong> Luna Park , Sydney </p>
-    {% if event.category %}<p><strong>Category:</strong> {{ event.category.name }}</p>{% endif %}
-    <p><strong>Description:</strong>{{ event.description }}</p>
-    {% if reviews %}
-      <h4>Reviews:</h4>
-      {% for rev in reviews %}
-        <div class="mb-2">
-          <strong>{{ rev.user.username }}</strong>: 
-          {% for i in "12345"|make_list %}
-            {% if forloop.counter <= rev.rating %}
-              ★
-            {% else %}
-              ☆
-            {% endif %}
-          {% endfor %}
-
-          <p>{{ rev.comment|linebreaks }}</p>
-        </div>
-      {% empty %}
-        <p>No reviews yet.</p>
-      {% endfor %}
-    {% endif %}
-  </div>
-  <div class="col-md-4">
-    <div class="card p-3 bg-light">
-      {% if event.price > 0 %}
-        <h5>Price: ${{ event.price }}</h5>
+<div class="container my-5">
+  <div class="row g-4">
+    
+    <!-- Event Image -->
+    <div class="col-12">
+      {% if event.image %}
+        <img src="{{ event.image.url }}" class="img-fluid rounded shadow-sm mb-4" alt="{{ event.title }}">
       {% else %}
-        <h5>Free Event</h5>
+        <img src="https://via.placeholder.com/900x400.png?text={{ event.title|urlencode }}" class="img-fluid rounded shadow-sm mb-4" alt="{{ event.title }}">
       {% endif %}
-      {% if event.capacity %}
-        <p>{{ event.tickets.count }} / {{ event.capacity }} tickets sold</p>
+    </div>
+
+    <!-- Event Info & Description -->
+    <div class="col-md-8">
+      <h2>{{ event.title }}</h2>
+      <p><strong>Start Time:</strong> {{ event.start_time|date:"l, j F Y" }} at {{ event.start_time|time:"g:i A" }}</p>
+
+      {% if event.end_time %}
+        <p><strong>End Time:</strong> {{ event.end_time|date:"l, j F Y" }} at {{ event.end_time|time:"g:i A" }}</p>
       {% endif %}
-      {% if user.is_authenticated %}
-        <form action="{% url 'buy_ticket' event.id %}" method="post">
-          {% csrf_token %}
-          <button type="submit" class="btn btn-success w-100">Buy Ticket</button>
-        </form>
-      {% else %}
-        <p><a href="{% url 'login' %}?next={% url 'event_detail' event.id %}" class="btn btn-success w-100">Log in to Buy Ticket</a></p>
+
+      <p><strong>Location:</strong> {{ event.location }}</p>
+      
+      {% if event.category %}
+        <p><strong>Category:</strong> {{ event.category.name }}</p>
       {% endif %}
+
+      {% if event.description %}
+        <p><strong>Description:</strong> {{ event.description }}</p>
+      {% endif %}
+
+      {% if reviews %}
+        <h4 class="mt-4">Reviews:</h4>
+        {% for rev in reviews %}
+          <div class="border-bottom pb-2 mb-3">
+            <strong>{{ rev.user.username }}</strong>:
+            {% for i in "12345"|make_list %}
+              {% if forloop.counter <= rev.rating %}
+                <span style="color: gold;">★</span>
+              {% else %}
+                <span style="color: lightgray;">☆</span>
+              {% endif %}
+            {% endfor %}
+            <p>{{ rev.comment|linebreaks }}</p>
+          </div>
+        {% empty %}
+          <p>No reviews yet.</p>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    <!-- Ticket Card -->
+    <div class="col-md-4">
+      <div class="card p-4 shadow-sm bg-light">
+        {% if event.price > 0 %}
+          <h5 class="card-title">Price: ${{ event.price }}</h5>
+        {% else %}
+          <h5 class="card-title text-success">Free Event</h5>
+        {% endif %}
+
+        {% if event.capacity %}
+          <p class="card-text">{{ event.tickets.count }} / {{ event.capacity }} tickets sold</p>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+          <form action="{% url 'buy_ticket' event.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success w-100">Buy Ticket</button>
+          </form>
+        {% else %}
+          <a href="{% url 'login' %}?next={% url 'event_detail' event.id %}" class="btn btn-success w-100">Log in to Buy Ticket</a>
+        {% endif %}
+      </div>
     </div>
   </div>
 </div>

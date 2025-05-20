@@ -1,8 +1,11 @@
 {% extends 'events/base.html' %}
 {% load static %}
 {% block title %}Events{% endblock %}
+
 {% block content %}
 <h2>All Events</h2>
+
+<!-- 🔍 Filter + Search Form -->
 <form method="get" class="row gy-2 gx-3 align-items-center mb-4">
   <div class="col-sm-4">
     <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search events...">
@@ -26,25 +29,30 @@
   <div class="col-auto">
     <button type="submit" class="btn btn-primary">Filter</button>
     <a href="{% url 'event_list' %}" class="btn btn-secondary ms-2">Reset</a>
-
   </div>
 </form>
 
+<!-- 📋 Event List -->
 {% if events %}
   <div class="row row-cols-1 row-cols-md-2 g-4">
     {% for event in events %}
       <div class="col">
-        <div class="card h-100">
+        <div class="card h-100 shadow-sm">
+          {% if event.image %}
+            <img src="{{ event.image.url }}" class="card-img-top" style="max-height: 250px; object-fit: cover;" alt="{{ event.title }}">
+          {% endif %}
           <div class="card-body">
             <h5 class="card-title">{{ event.title }}</h5>
             <p class="card-text">
               <small class="text-muted">
-                {{ event.start_time|date:"SHORT_DATE_FORMAT" }} {{ event.start_time|time:"SHORT_TIME_FORMAT" }} 
+                {{ event.start_time|date:"SHORT_DATE_FORMAT" }} {{ event.start_time|time:"SHORT_TIME_FORMAT" }}
                 {% if event.location %} @ {{ event.location }}{% endif %}
               </small><br>
               {{ event.description|truncatewords:20 }}
             </p>
-            {% if event.category %}<span class="badge bg-secondary">{{ event.category.name }}</span>{% endif %}
+            {% if event.category %}
+              <span class="badge bg-secondary">{{ event.category.name }}</span>
+            {% endif %}
           </div>
           <div class="card-footer text-end">
             <a href="{% url 'event_detail' event.id %}" class="btn btn-outline-primary btn-sm">View Details</a>
@@ -57,3 +65,4 @@
   <p>No events found.</p>
 {% endif %}
 {% endblock %}
+

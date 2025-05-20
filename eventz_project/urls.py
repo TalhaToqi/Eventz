@@ -22,6 +22,8 @@ from django.urls import path
 from django.contrib import admin
 from django.urls import path, include
 from events import views  # we'll put our view functions in events/views.py
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -37,3 +39,4 @@ urlpatterns = [
     # Event app URLs (we will add more as we implement events)
     path('', include('events.urls')),  # include events app URLs (to create separately)
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

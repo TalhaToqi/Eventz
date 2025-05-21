@@ -1,0 +1,10 @@
+# Virtualenv
+venv/
+# SQLite DB
+db.sqlite3
+# VSCode settings (user-specific)
+.vscode/
+# Python cache
+__pycache__/
+*.py[cod]
+db.sqlite3
